@@ -11,6 +11,8 @@ from os.path import dirname, exists, expanduser
 from os import makedirs
 from threading import Thread
 
+__author__ = 'jarbas'
+
 
 class VisionFeed(object):
     def __init__(self):
@@ -69,6 +71,10 @@ class VisionFeed(object):
             except:
                 self.get()
 
+    def shutdown(self):
+        self.event_thread.join(0)
+        self.event_thread = None
+
 
 class SharedVisionFeed(object):
     def __init__(self):
@@ -83,8 +89,7 @@ class SharedVisionFeed(object):
             self.t.start()
         except Exception as e:
             LOG.warning("Could not start broadcasting vision, please stop "
-                        "all "
-                        "clients trying to read from 56600 and re-start")
+                        "all clients trying to read from 56600 and re-start")
             LOG.error(e)
 
     def start(self):
@@ -93,9 +98,6 @@ class SharedVisionFeed(object):
     def shutdown(self):
         self.t.join(0)
         self.t = None
-
-
-__author__ = 'jarbas'
 
 
 class WebcamSkill(MycroftSkill):
@@ -156,18 +158,19 @@ class WebcamSkill(MycroftSkill):
                          ".jpg"), self.feed)
 
     def handle_get_picture(self, message):
+        path = None
         if self.feed is not None:
             path = join(self.settings["picture_path"],
                         time.asctime() + ".jpg")
             cv2.imwrite(path, self.feed)
-            self.emitter.emit(message.reply("webcam.picture", {"path": path}))
+        self.emitter.emit(message.reply("webcam.picture", {"path": path}))
 
     def shutdown(self):
         self.vs.stop()
-        if self.vision_thread:
-            self.vision_thread.join(10)
+        self.vision_thread.join(10)
         self.vision_thread = None
         self.shared_vision.shutdown()
+        self.vision_server.shutdown()
         super(WebcamSkill, self).shutdown()
 
 
