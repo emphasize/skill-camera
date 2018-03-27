@@ -44,6 +44,9 @@ class WebcamSkill(MycroftSkill):
         self.feed = CameraFeed()
         self.last_timestamp = time.time()
 
+    def get_intro_message(self):
+        self.speak_dialog("priority")
+
     @property
     def last_frame(self):
         return self.feed.get().copy()

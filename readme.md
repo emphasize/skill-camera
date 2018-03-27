@@ -19,8 +19,9 @@ messagebus to get a file path
 
 
     def initialize(self):
-        self.emitter.emit(Message("webcam.request"))
         self.add_event("webcam.picture", self.get_the_feed)
+        self.emitter.emit(Message("webcam.request"))
+
 
     def get_the_feed(self, message):
         file_path = message.data.get("path")
@@ -37,7 +38,6 @@ CameraFeed class, ensure webcam is a priority skill!
 ## TODOS
 
 - fix shutdown
-- change config automatically to make priority skill
 
 ## Credits
 JarbasAI
