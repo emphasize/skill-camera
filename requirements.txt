@@ -1,2 +1,2 @@
 imutils
-shared_camera
+shared_camera>=0.3

@@ -140,8 +140,8 @@ class WebcamSkill(MycroftSkill):
         self.emitter.emit(message.reply("webcam.picture", {"path": path}))
 
     def shutdown(self):
+        self.camera.stop_stream()
         self.camera.shutdown()
-        del self.camera
         super(WebcamSkill, self).shutdown()
 
 
