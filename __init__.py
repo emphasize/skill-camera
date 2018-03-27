@@ -40,7 +40,7 @@ class WebcamSkill(MycroftSkill):
         LOG.info("initializing videostream")
         self.camera = SharedCamera(
             VideoStream(src=self.settings["video_source"],
-                        usePiCamera=self.use_pi).start())
+                        usePiCamera=self.use_pi))
         self.feed = CameraFeed()
         self.last_timestamp = time.time()
 
