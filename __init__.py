@@ -91,6 +91,10 @@ class SharedVisionFeed(object):
     def start(self):
         self.server.serve_forever()
 
+    def shutdown(self):
+        self.t.join(0)
+        self.t = None
+
 
 __author__ = 'jarbas'
 
@@ -164,6 +168,7 @@ class WebcamSkill(MycroftSkill):
         if self.vision_thread:
             self.vision_thread.join(10)
         self.vision_thread = None
+        self.shared_vision.shutdown()
         super(WebcamSkill, self).shutdown()
 
 
