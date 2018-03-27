@@ -18,6 +18,7 @@ class WebcamSkill(MycroftSkill):
     def __init__(self):
         self.create_settings_meta()
         super(WebcamSkill, self).__init__()
+        self.reload_skill = False
         platform = self.config_core.get("enclosure", {}) \
             .get("platform", "unknown")
         self.use_pi = platform.lower() in ["picroft", "mark_1", "mark1",

@@ -6,6 +6,8 @@ take pictures with webcam, share image objects with other processes, send image 
 
 you should make this a priority skill, it is meant to be used by other skills, it is needed because only 1 skill can access the webcam at a time
 
+NOTE: this skill does not auto-reload, requires manual reboot
+
 ## Examples
 * "take a picture"
 
@@ -31,6 +33,11 @@ CameraFeed class, ensure webcam is a priority skill!
 
     feed = CameraFeed()
     frame = feed.get().copy()
+
+## TODOS
+
+- fix shutdown
+- change config automatically to make priority skill
 
 ## Credits
 JarbasAI
