@@ -4,7 +4,6 @@ from mycroft.util import play_wav, play_mp3
 from multiprocessing.managers import BaseManager
 from queue import LifoQueue
 from os.path import join
-from imutils.video import FPS
 from imutils.video import VideoStream
 import time
 import cv2
@@ -77,7 +76,7 @@ class SharedVisionFeed(object):
         BaseManager.register('get_feed', callable=lambda: feed_queue)
         try:
             self.m = BaseManager(address=('', 56600),
-                             authkey=b'abc')
+                                 authkey=b'abc')
             self.server = self.m.get_server()
             self.t = Thread(target=self.start)
             self.t.setDaemon(True)
@@ -85,7 +84,7 @@ class SharedVisionFeed(object):
         except Exception as e:
             LOG.warning("Could not start broadcasting vision, please stop "
                         "all "
-                      "clients trying to read from 56600 and re-start")
+                        "clients trying to read from 56600 and re-start")
             LOG.error(e)
 
     def start(self):
@@ -100,7 +99,6 @@ __author__ = 'jarbas'
 
 
 class WebcamSkill(MycroftSkill):
-
     def __init__(self):
         super(WebcamSkill, self).__init__()
         platform = self.config_core.get("enclosure", {}) \
@@ -155,11 +153,12 @@ class WebcamSkill(MycroftSkill):
                 play_mp3(self.settings["camera_sound_path"])
 
         cv2.imwrite(join(self.settings["picture_path"], time.asctime() +
-                    ".jpg"), self.feed)
+                         ".jpg"), self.feed)
 
     def handle_get_picture(self, message):
         if self.feed is not None:
-            path = join(self.settings["picture_path"], time.asctime() + ".jpg")
+            path = join(self.settings["picture_path"],
+                        time.asctime() + ".jpg")
             cv2.imwrite(path, self.feed)
             self.emitter.emit(message.reply("webcam.picture", {"path": path}))
 
