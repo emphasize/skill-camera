@@ -9,6 +9,10 @@ import cv2
 from os.path import dirname, exists, expanduser
 from os import makedirs
 import json
+try:
+    import yagmail
+except ImportError:
+    yagmail = None
 
 
 __author__ = 'jarbas'
@@ -26,6 +30,8 @@ class WebcamSkill(MycroftSkill):
 
         if "video_source" not in self.settings:
             self.settings["video_source"] = 0
+        if "mail_picture" not in self.settings:
+            self.settings["mail_picture"] = False
         if "play_sound" not in self.settings:
             self.settings["play_sound"] = True
         if "picture_path" not in self.settings:
@@ -44,8 +50,30 @@ class WebcamSkill(MycroftSkill):
         self.feed = CameraFeed()
         self.last_timestamp = time.time()
 
+        # private email
+        if yagmail is not None:
+            mail_config = self.config_core.get("email", {})
+            self.email = mail_config.get("email")
+            self.password = mail_config.get("password")
+            self.target_mail = mail_config.get("destinatary", self.email)
+
     def get_intro_message(self):
         self.speak_dialog("priority")
+
+    def mail_picture(self, picture):
+        if self.settings["mail_picture"]:
+            title = "Mycroft Camera Skill"
+            body = ""
+            # try private sending
+            if yagmail is not None and self.email and self.password:
+                with yagmail.SMTP(self.email, self.password) as yag:
+                    yag.send(self.target_email, title, [body, picture])
+            else:
+                self.speak_dialog("send.fail")
+                return False
+            self.speak_dialog("send")
+            return True
+        return False
 
     @property
     def last_frame(self):
@@ -97,6 +125,22 @@ class WebcamSkill(MycroftSkill):
                         ]
                     },
                     {
+                        "name": "mail_picture",
+                        "fields": [
+                            {
+                                "type": "label",
+                                "label": "want to email taken pictures? check the repository for "
+                                         "additional instructions"
+                            },
+                            {
+                                "type": "checkbox",
+                                "name": "mail_picture",
+                                "label": "mail_picture",
+                                "value": "false"
+                            }
+                        ]
+                    },
+                    {
                         "name": "picture_path",
                         "fields": [
                             {
@@ -132,8 +176,10 @@ class WebcamSkill(MycroftSkill):
             elif ".mp3" in self.settings["camera_sound_path"]:
                 play_mp3(self.settings["camera_sound_path"])
 
-        cv2.imwrite(join(self.settings["picture_path"], time.asctime() +
-                         ".jpg"), self.last_frame)
+        pic_path = join(self.settings["picture_path"], time.asctime() +
+                        ".jpg")
+        cv2.imwrite(pic_path, self.last_frame)
+        self.mail_picture(pic_path)
         self.speak_dialog("picture")
 
     def handle_get_picture(self, message):
