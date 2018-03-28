@@ -28,12 +28,12 @@ messagebus to get a file path
 
 
 you can also get the latest webcam frame as a numpy array by using the
-CameraFeed class, ensure webcam is a priority skill!
+Camera class, ensure webcam is a priority skill!
 
-    from share_camera import CameraFeed
+    from share_camera import Camera
 
-    feed = CameraFeed()
-    frame = feed.get().copy()
+    c = Camera()
+    frame = c.get()
 
 ## email and privacy
 
