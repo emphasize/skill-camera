@@ -4,11 +4,11 @@ webcam for mycroft
 ## Description
 take pictures with webcam, share image objects with other processes, send image file path in messagebus
 
-you should make this a priority skill, it is meant to be used by other skills, it is needed because only 1 skill can access the webcam at a time
+you should make this a priority skill, it is meant to be used by other skills
 
-NOTE: this skill does not auto-reload, requires manual reboot
 
 ## Examples
+
 * "take a picture"
 
 
@@ -30,7 +30,7 @@ messagebus to get a file path
 you can also get the latest webcam frame as a numpy array by using the
 Camera class, ensure webcam is a priority skill!
 
-    from share_camera import Camera
+    from shared_camera import Camera
 
     c = Camera()
     frame = c.get()
@@ -60,10 +60,6 @@ skill settings were not used or your email and password would be stored in
 mycroft home backend
 
 
-
-## TODOS
-
-- fix shutdown
 
 ## Credits
 JarbasAI

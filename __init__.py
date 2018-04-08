@@ -1,7 +1,7 @@
 from mycroft.skills.core import MycroftSkill, intent_file_handler
 from mycroft.util.log import LOG
 from mycroft.util import play_wav, play_mp3
-from shared_camera import SharedCamera
+from shared_camera import Camera
 from os.path import join
 from imutils.video import VideoStream
 import time
@@ -22,7 +22,6 @@ class WebcamSkill(MycroftSkill):
     def __init__(self):
         self.create_settings_meta()
         super(WebcamSkill, self).__init__()
-        self.reload_skill = False
         platform = self.config_core.get("enclosure", {}) \
             .get("platform", "unknown")
         self.use_pi = platform.lower() in ["picroft", "mark_1", "mark1",
@@ -44,7 +43,7 @@ class WebcamSkill(MycroftSkill):
             makedirs(self.settings["picture_path"])
 
         LOG.info("initializing videostream")
-        self.camera = SharedCamera(
+        self.camera = Camera(
             VideoStream(src=self.settings["video_source"],
                         usePiCamera=self.use_pi))
         self.last_timestamp = time.time()
@@ -77,7 +76,7 @@ class WebcamSkill(MycroftSkill):
     @property
     def last_frame(self):
         self.last_timestamp = time.time()
-        return self.camera.get_stream()
+        return self.camera.get().copy()
 
     def create_settings_meta(self):
         meta = {
