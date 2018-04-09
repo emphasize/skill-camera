@@ -1,4 +1,4 @@
-from mycroft.skills.core import MycroftSkill, intent_file_handler
+from mycroft.skills.core import MycroftSkill, intent_file_handler, Message
 from mycroft.util.log import LOG
 from mycroft.util import play_wav, play_mp3
 from shared_camera import Camera
@@ -42,18 +42,26 @@ class WebcamSkill(MycroftSkill):
         if not exists(self.settings["picture_path"]):
             makedirs(self.settings["picture_path"])
 
-        LOG.info("initializing videostream")
-        self.camera = Camera(
-            VideoStream(src=self.settings["video_source"],
-                        usePiCamera=self.use_pi))
-        self.last_timestamp = time.time()
-
         # private email
         if yagmail is not None:
             mail_config = self.config_core.get("email", {})
             self.email = mail_config.get("email")
             self.password = mail_config.get("password")
             self.target_mail = mail_config.get("destinatary", self.email)
+
+        self.camera = None
+        self.last_timestamp = 0
+
+    def initialize(self):
+        LOG.info("initializing videostream")
+
+        def notify(text):
+            self.emitter.emit(Message(text))
+
+        self.camera = Camera(
+            VideoStream(src=self.settings["video_source"],
+                        usePiCamera=self.use_pi), callback=notify)
+        self.last_timestamp = time.time()
 
     def get_intro_message(self):
         self.speak_dialog("priority")
