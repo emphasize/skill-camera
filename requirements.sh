@@ -34,6 +34,7 @@ done
 # do extra stuff, like compiling from source`
 # exit 1 # indicate failure with any non 0 error code`
 
+
 # open cv https://medium.com/@manuganji/installation-of-opencv-numpy-scipy-inside-a-virtualenv-bf4d82220313
 
 user=$(sh -c 'echo $SUDO_USER')
@@ -44,6 +45,18 @@ DIRECTORY=/home/$user/.virtualenvs/mycroft
 if [ -d "$DIRECTORY" ]; then
   # mycroft venv exists.
   cp /usr/lib/python2.7/dist-packages/cv* /home/$user/.virtualenvs/mycroft/lib/python2.7/site-packages/
+  # try to install py_msm as a failsafe, the skill will try to use it to install itself if imports fail
+
+  if [ -z "$WORKON_HOME" ]; then
+      VIRTUALENV_ROOT=${VIRTUALENV_ROOT:-"${HOME}/.virtualenvs/mycroft"}
+  else
+      VIRTUALENV_ROOT="$WORKON_HOME/mycroft"
+  fi
+
+  source "${VIRTUALENV_ROOT}/bin/activate"
+
+  pip instal py_msm
+
 fi
 
 # install jarbas
@@ -52,6 +65,17 @@ DIRECTORY=/home/$user/.virtualenvs/jarbas
 if [ -d "$DIRECTORY" ]; then
   # jarbas venv exists.
   cp /usr/lib/python2.7/dist-packages/cv* /home/$user/.virtualenvs/jarbas/lib/python2.7/site-packages/
+
+  if [ -z "$WORKON_HOME" ]; then
+      VIRTUALENV_ROOT=${VIRTUALENV_ROOT:-"${HOME}/.virtualenvs/jarbas"}
+  else
+      VIRTUALENV_ROOT="$WORKON_HOME/jarbas"
+  fi
+
+  source "${VIRTUALENV_ROOT}/bin/activate"
+
+  pip instal py_msm
+
 fi
 
 # compile dlib

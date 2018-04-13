@@ -1,18 +1,24 @@
 from mycroft.skills.core import MycroftSkill, intent_file_handler, Message
 from mycroft.util.log import LOG
 from mycroft.util import play_wav, play_mp3
-from shared_camera import Camera
 from os.path import join
-from imutils.video import VideoStream
 import time
-import cv2
 from os.path import dirname, exists, expanduser
 from os import makedirs
 import json
+
 try:
+    import cv2
+    from imutils.video import VideoStream
+    from shared_camera import Camera
     import yagmail
 except ImportError:
-    yagmail = None
+    # re-install yourself
+    from py_msm import MycroftSkillsManager
+    msm = MycroftSkillsManager()
+    msm.install_by_url("https://github.com/JarbasAl/skill-camera", True)
+    # trigger reload
+    msm.reload_skill("skill-camera")
 
 
 __author__ = 'jarbas'
