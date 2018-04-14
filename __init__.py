@@ -90,7 +90,9 @@ class WebcamSkill(MycroftSkill):
     @property
     def last_frame(self):
         self.last_timestamp = time.time()
-        return self.camera.get().copy()
+        if self.camera:
+            return self.camera.get().copy()
+        return None
 
     def create_settings_meta(self):
         meta = {
