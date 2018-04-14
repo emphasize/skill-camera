@@ -83,7 +83,7 @@ if [ -d "$DIRECTORY" ]; then
 fi
 
 # outside venv also
-pip install py_msm
+sudo pip install py_msm
 
 # compile dlib
 # installed in pip for now
