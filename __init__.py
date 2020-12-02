@@ -16,7 +16,7 @@ except ImportError:
     # re-install yourself
     from py_msm import MycroftSkillsManager
     msm = MycroftSkillsManager()
-    msm.install_by_url("https://github.com/JarbasAl/skill-camera", True)
+    msm.install_by_url("https://github.com/emphasize/skill-camera", True)
     # trigger reload
     msm.reload_skill("skill-camera")
 
@@ -30,7 +30,7 @@ class WebcamSkill(MycroftSkill):
         super(WebcamSkill, self).__init__()
         platform = self.config_core.get("enclosure", {}) \
             .get("platform", "unknown")
-        self.use_pi = platform.lower() in ["picroft", "mark_1", "mark1",
+        self.use_pi = platform.lower() in ["mycroft_mark_2", "mycroft_mark_1", "picroft", "unknown",
                                            "raspbian", "raspberry", "pi"]
 
         if "video_source" not in self.settings:

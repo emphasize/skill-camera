@@ -3,21 +3,32 @@
 # in most cases.  Py msm handles invokes the script with sudo internally if the platform allows it
 
 #detect distribution using lsb_release (may be replaced parsing /etc/*release)
-dist=$(lsb_release -d |awk '{print$2}')
-echo $dist
+#TODO until Pako is up to speed
+function os_is() {
+    [[ $(grep "^ID=" /etc/os-release | awk -F'=' '/^ID/ {print $2}' | sed 's/\"//g') == $1 ]]
+}
+
+function os_is_like() {
+    grep "^ID_LIKE=" /etc/os-release | awk -F'=' '/^ID_LIKE/ {print $2}' | sed 's/\"//g' | grep -q "\\b$1\\b"
+}
+
+function found_exe() {
+    hash "$1" 2>/dev/null
+}
+
 dependencies=( python-opencv )
 
 # default pm
 pm="sudo apt-get install -y"
 
 #setting dependencies and package manager in relation to the distribution
-if [ "$dist"  == "Arch"  ]; then
-    pm="sudo pacman -S"
-elif [ "$dist" ==  "Ubuntu" ] || [ "$dist" == "KDE" ] || [ "$dist" == "Debian" ] || [ "$dist" == "antiX" ]; then
+if os_is_like arch || os_is arch; then
+    pm="sudo pacman -Sy --needed"
+elif os_is_like debian || os_is debian || os_is_like ubuntu || os_is ubuntu || os_is linuxmint || os_is antiX; then
     pm="sudo apt-get install -y"
-elif [ "$dist"  == "Raspbian"  ]; then
+elif found_exe pkcon; then
     pm="pkcon install"
-elif [ "$dist"  == "Fedora" ] || [ "$dist" == "RedHat" ] || [ "$dist" == "CentOS" ]; then
+elif os_is_like fedora || os_is fedora || os_is rhel || os_is centos; then
     dependencies=( opencv-python)
     pm="sudo yum -y install"
 fi
@@ -29,81 +40,5 @@ do
     echo "installing: $dep"
     $pm $dep
 done
-
-
-# do extra stuff, like compiling from source`
-# exit 1 # indicate failure with any non 0 error code`
-
-
-# open cv https://medium.com/@manuganji/installation-of-opencv-numpy-scipy-inside-a-virtualenv-bf4d82220313
-
-user=$(sh -c 'echo $SUDO_USER')
-
-# install mycroft
-DIRECTORY=/home/$user/.virtualenvs/mycroft
-
-if [ -d "$DIRECTORY" ]; then
-  # mycroft venv exists.
-  cp /usr/lib/python2.7/dist-packages/cv* /home/$user/.virtualenvs/mycroft/lib/python2.7/site-packages/
-  # try to install py_msm as a failsafe, the skill will try to use it to install itself if imports fail
-
-  if [ -z "$WORKON_HOME" ]; then
-      VIRTUALENV_ROOT=${VIRTUALENV_ROOT:-"${HOME}/.virtualenvs/mycroft"}
-  else
-      VIRTUALENV_ROOT="$WORKON_HOME/mycroft"
-  fi
-
-  source "${VIRTUALENV_ROOT}/bin/activate"
-
-  pip install py_msm
-
-  deactivate
-
-fi
-
-# install jarbas
-DIRECTORY=/home/$user/.virtualenvs/jarbas
-
-if [ -d "$DIRECTORY" ]; then
-  # jarbas venv exists.
-  cp /usr/lib/python2.7/dist-packages/cv* /home/$user/.virtualenvs/jarbas/lib/python2.7/site-packages/
-
-  if [ -z "$WORKON_HOME" ]; then
-      VIRTUALENV_ROOT=${VIRTUALENV_ROOT:-"${HOME}/.virtualenvs/jarbas"}
-  else
-      VIRTUALENV_ROOT="$WORKON_HOME/jarbas"
-  fi
-
-  source "${VIRTUALENV_ROOT}/bin/activate"
-
-  pip install py_msm
-
-  deactivate
-
-fi
-
-# outside venv also
-sudo pip install py_msm
-
-# compile dlib
-# installed in pip for now
-#rundir=$(pwd)
-#if ! git clone https://github.com/davisking/dlib ; then
-#  echo "Unable to clone Dlib!"
-#  exit 1
-#fi
-#cd dlib
-#if grep -q avx /proc/cpuinfo ; then
-#  mkdir build; cd build; cmake .. -DDLIB_USE_CUDA=0 -DUSE_AVX_INSTRUCTIONS=1; cmake --build .
-#else
-#  mkdir build; cd build; cmake .. -DDLIB_USE_CUDA=0 ; cmake --build .
-#fi
-
-#if ! python ${rundir}/dlib/setup.py install --no USE_AVX_INSTRUCTIONS --no DLIB_USE_CUDA ; then
-#  echo "Unable to install python Dlib!"
-#  exit 1
-#fi
-
-# exit with 0 to indicate success`
 
 exit 0
