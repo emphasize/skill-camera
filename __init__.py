@@ -1,6 +1,7 @@
-from mycroft.skills.core import MycroftSkill, intent_file_handler, Message
+from mycroft.skills.core import intent_handler, intent_file_handler
+from mycroft import MycroftSkill
 from mycroft.util.log import LOG
-from mycroft.util import play_wav, play_mp3
+from mycroft.util.audio_utils import play_wav, play_mp3
 from os.path import join
 import time
 from os.path import dirname, exists, expanduser
@@ -10,11 +11,11 @@ import json
 try:
     import cv2
     from imutils.video import VideoStream
-    from shared_camera import Camera
+    #from shared_camera import Camera
     import yagmail
 except ImportError:
     # re-install yourself
-    from py_msm import MycroftSkillsManager
+    from msm import MycroftSkillsManager
     msm = MycroftSkillsManager()
     msm.install_by_url("https://github.com/emphasize/skill-camera", True)
     # trigger reload
