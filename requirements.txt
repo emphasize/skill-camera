@@ -1,3 +1,4 @@
 imutils
-shared_camera>=0.6.5
+opencv-python
+opencv-contrib-python
 yagmail
