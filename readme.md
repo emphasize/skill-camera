@@ -40,7 +40,9 @@ Camera class, ensure webcam is a priority skill!
     c = Camera()
     frame = c.get()
 
-## email and privacy
+## privacy
+
+# email
 
 there is an option to send taken pictures by mail in addition to storing them
 
@@ -64,7 +66,25 @@ provided
 skill settings were not used or your email and password would be stored in
 mycroft home backend
 
+# Using multiple Sources
 
+*Draft*
+
+*Note*: You have to tick the checkbox in home.mycroft.ai' skill settings
+        under video_sources ("Use multiple sources")
+
+By default the skill is handling one source that is connected to the device.
+To be able to stream multiple remote streams you have to edit the user conf
+like above and add your stream(s) like this example
+
+        "cams": {
+            "door": "http://...",
+            "garden": "http://...",
+            "...": "..."
+        }
+
+The "key" is part of the intent to call those specific stream
+eg "show cam door"
 
 ## Credits
 JarbasAI
