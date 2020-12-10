@@ -18,6 +18,7 @@ function found_exe() {
 
 mycroft_path=$( dirname $VIRTUAL_ENV )
 openvc_path="opencv"
+working_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 dependencies=( python-opencv )
 
@@ -80,5 +81,9 @@ if [[  $( uname -m ) == *"arm"* ]] && [[ -z $( os_is raspbian ) ]]; then
         fi
     fi
 fi
+
+#bring in some preconfiguration to ~/.mycroft/mycroft.conf
+JSON=$( cat ~/mycroft/.mycroft.conf | jq '.cams = { "picture_path": "'$HOME'/webcam/", "camera_sound": "'$working_path'/camera.wav", "examplecam": "exampleurl" }' )
+echo "$JSON" > ~/mycroft/.mycroft.conf
 
 exit 0

@@ -5,7 +5,7 @@ from mycroft.util.audio_utils import play_wav, play_mp3
 from os.path import join
 import time
 from os.path import dirname, exists, expanduser
-from os import makedirs
+from os import makedirs, access, W_OK
 import json
 
 try:
@@ -40,14 +40,16 @@ class WebcamSkill(MycroftSkill):
             self.settings["mail_picture"] = False
         if "play_sound" not in self.settings:
             self.settings["play_sound"] = True
-        if "picture_path" not in self.settings:
-            self.settings["picture_path"] = expanduser("~/webcam")
         if "camera_sound_path" not in self.settings:
             self.settings["camera_sound_path"] = join(dirname(__file__),
                                                       "camera.wav")
 
-        if not exists(self.settings["picture_path"]):
-            makedirs(self.settings["picture_path"])
+        self.picture_path=self.config_core.get("cams", {}).get("picture_path", None)
+        if not access(self.picture_path, W_OK):
+            if not exists(self.picture_path):
+                makedirs(self.picture_path)
+            else
+                self.speak_dialog("picture_path.no_access")
 
         # private email
         if yagmail is not None:
@@ -155,22 +157,6 @@ class WebcamSkill(MycroftSkill):
                                 "value": "false"
                             }
                         ]
-                    },
-                    {
-                        "name": "picture_path",
-                        "fields": [
-                            {
-                                "type": "label",
-                                "label": "where to save taken pictures"
-                            },
-                            {
-                                "name": "picture_path",
-                                "type": "text",
-                                "label": "picture_path",
-                                "placeholder": expanduser("~/webcam"),
-                                "value": expanduser("~/webcam")
-                            }
-                        ]
                     }
                 ]
             }
@@ -192,15 +178,15 @@ class WebcamSkill(MycroftSkill):
             elif ".mp3" in self.settings["camera_sound_path"]:
                 play_mp3(self.settings["camera_sound_path"])
 
-        pic_path = join(self.settings["picture_path"], time.asctime() +
+        pic_path = join(self.picture_path, time.asctime() +
                         ".jpg")
         cv2.imwrite(pic_path, self.last_frame)
         self.mail_picture(pic_path)
         self.speak_dialog("picture")
 
     def handle_get_picture(self, message):
-        path = join(self.settings["picture_path"],
-                    time.asctime() + ".jpg")
+
+        path = join(self.picture_path, time.asctime() + ".jpg")
         cv2.imwrite(path, self.last_frame)
         self.emitter.emit(message.reply("webcam.picture", {"path": path}))
 
