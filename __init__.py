@@ -40,10 +40,8 @@ class WebcamSkill(MycroftSkill):
             self.settings["mail_picture"] = False
         if "play_sound" not in self.settings:
             self.settings["play_sound"] = True
-        if "camera_sound_path" not in self.settings:
-            self.settings["camera_sound_path"] = join(dirname(__file__),
-                                                      "camera.wav")
 
+        self.camera_sound=self.config_core.get("cams", {}).get("camera_sound", None)
         self.picture_path=self.config_core.get("cams", {}).get("picture_path", None)
         if not access(self.picture_path, W_OK):
             if not exists(self.picture_path):
@@ -103,7 +101,7 @@ class WebcamSkill(MycroftSkill):
             "skillMetadata": {
                 "sections": [
                     {
-                        "name": "video_source",
+                        "name": "Video source",
                         "fields": [
                             {
                                 "type": "label",
@@ -119,20 +117,11 @@ class WebcamSkill(MycroftSkill):
                         ]
                     },
                     {
-                        "name": "camera_sound_path",
+                        "name": "Notification",
                         "fields": [
                             {
                                 "type": "label",
                                 "label": "path to wav or mp3 sound file to play on picture taken"
-                            },
-                            {
-                                "name": "camera_sound_path",
-                                "type": "text",
-                                "label": "camera_sound_path",
-                                "placeholder": join(dirname(__file__),
-                                                      "camera.wav"),
-                                "value": join(dirname(__file__),
-                                                      "camera.wav")
                             },
                             {
                                 "type": "checkbox",
@@ -143,7 +132,7 @@ class WebcamSkill(MycroftSkill):
                         ]
                     },
                     {
-                        "name": "mail_picture",
+                        "name": "Mail Picture",
                         "fields": [
                             {
                                 "type": "label",
@@ -171,12 +160,12 @@ class WebcamSkill(MycroftSkill):
 
     @intent_file_handler("take_picture.intent")
     def handle_take_picture(self, message):
-        if exists(self.settings["camera_sound_path"]) and \
+        if exists(self.camera_sound) and \
                 self.settings["play_sound"]:
-            if ".wav" in self.settings["camera_sound_path"]:
-                play_wav(self.settings["camera_sound_path"])
-            elif ".mp3" in self.settings["camera_sound_path"]:
-                play_mp3(self.settings["camera_sound_path"])
+            if ".wav" in self.camera_sound:
+                play_wav(self.camera_sound)
+            elif ".mp3" in self.camera_sound:
+                play_mp3(self.camera_sound)
 
         pic_path = join(self.picture_path, time.asctime() +
                         ".jpg")
