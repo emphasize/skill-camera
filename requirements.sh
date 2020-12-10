@@ -83,7 +83,7 @@ if [[  $( uname -m ) == *"arm"* ]] && [[ -z $( os_is raspbian ) ]]; then
 fi
 
 #bring in some preconfiguration to ~/.mycroft/mycroft.conf
-JSON=$( cat ~/mycroft/.mycroft.conf | jq '.cams = { "picture_path": "'$HOME'/webcam/", "camera_sound": "'$working_path'/camera.wav", "examplecam": "exampleurl" }' )
-echo "$JSON" > ~/mycroft/.mycroft.conf
+JSON=$( cat ~/.mycroft/mycroft.conf | jq '.cams = { "picture_path": "'$HOME'/webcam/", "camera_sound": "'$working_path'/camera.wav", "examplecam": "exampleurl" }' )
+echo "$JSON" > ~/.mycroft/mycroft.conf
 
 exit 0
