@@ -46,7 +46,7 @@ class WebcamSkill(MycroftSkill):
         if not access(self.picture_path, W_OK):
             if not exists(self.picture_path):
                 makedirs(self.picture_path)
-            else
+            else:
                 self.speak_dialog("picture_path.no_access")
 
         # private email
