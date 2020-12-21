@@ -179,6 +179,19 @@ class WebcamSkill(MycroftSkill):
         cv2.imwrite(path, self.last_frame)
         self.emitter.emit(message.reply("webcam.picture", {"path": path}))
 
+    def handle_get_stream(self, message):
+        cam_name = message.data.get("cam")
+        if not cam_name:
+            self.speak_dialog("stream.not_specified")
+            return
+        cam_config = self.config_core.get("cams", {})
+        self.cam = cam_config.get(cam_name)
+        if not self.cam:
+            self.speak_dialog("stream.no_config", data={"cam": cam_name})
+            return
+
+        self.gui.show_url(self.cam)
+
     def shutdown(self):
         self.camera.stop_stream()
         self.camera.shutdown()
